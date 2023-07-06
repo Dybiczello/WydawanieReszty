@@ -1,3 +1,4 @@
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -9,30 +10,33 @@ public class Main {
         Scanner resztaPodana = new Scanner(System.in);
 
         //Stworzenie kasy z odpowiednią liczbą drobnych
-        Map<Double, Integer> kasaDrobnych = new LinkedHashMap<>();
-        kasaDrobnych.put(5.0,1);
-        kasaDrobnych.put(2.0,3);
-        kasaDrobnych.put(1.0,5);
-        kasaDrobnych.put(0.5,10);
-        kasaDrobnych.put(0.2,20);
-        kasaDrobnych.put(0.1,200);
-        kasaDrobnych.put(0.05,100);
-        kasaDrobnych.put(0.02,100);
-        kasaDrobnych.put(0.01,10000);
+        Map<BigDecimal, Integer> kasaDrobnych = new LinkedHashMap<>();
+        kasaDrobnych.put(new BigDecimal("5.0"),1);
+        kasaDrobnych.put(new BigDecimal("2.0"),3);
+        kasaDrobnych.put(new BigDecimal("1.0"),5);
+        kasaDrobnych.put(new BigDecimal("0.5"),10);
+        kasaDrobnych.put(new BigDecimal("0.2"),20);
+        kasaDrobnych.put(new BigDecimal("0.1"),200);
+        kasaDrobnych.put(new BigDecimal("0.05"),100);
+        kasaDrobnych.put(new BigDecimal("0.02"),100);
+        kasaDrobnych.put(new BigDecimal("0.01"),10000);
 
         while (true){
             System.out.println("Podaj resztę: ");
-            double reszta = resztaPodana.nextDouble();
+            String resztaString = resztaPodana.nextLine();
 
-            Map<Double, Integer> wydanaReszta = new LinkedHashMap<>();
+            BigDecimal reszta = new BigDecimal(resztaString);
 
-            A: for(Map.Entry<Double, Integer> drobne : kasaDrobnych.entrySet()){
-                double wartosc = drobne.getKey();
+            Map<BigDecimal, Integer> wydanaReszta = new LinkedHashMap<>();
+            BigDecimal zero = new BigDecimal("0.0");
+
+            A: for(Map.Entry<BigDecimal, Integer> drobne : kasaDrobnych.entrySet()){
+                BigDecimal wartosc = drobne.getKey();
                 int ilosc = drobne.getValue();
                 B: while(ilosc != 0) {
-                    if (reszta < wartosc) {break B;}
+                    if (reszta.compareTo(wartosc) < 0) {break B;}
                     else{
-                        reszta = reszta - wartosc;
+                        reszta = reszta.subtract(wartosc);
                         ilosc -= 1;
                         kasaDrobnych.put(wartosc,ilosc);
                         if(wydanaReszta.containsKey(wartosc)){
@@ -42,16 +46,15 @@ public class Main {
                         else{
                             wydanaReszta.put(wartosc,1);
                         }
-                        if(reszta == 0){
+                        if(reszta.compareTo(zero) == 0){
                             break A;
                         }
                     }
                 }
             }
-            for(Map.Entry<Double, Integer> doWydania : wydanaReszta.entrySet()){
+            for(Map.Entry<BigDecimal, Integer> doWydania : wydanaReszta.entrySet()){
                 System.out.println("Wydaj " + doWydania.getValue() + " monet " + doWydania.getKey() + " zł \n");
             }
-            break;
         }
     }
 }
